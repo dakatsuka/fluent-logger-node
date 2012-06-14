@@ -1,0 +1,36 @@
+{
+  "name": "fluent-logger-node",
+  "author": {
+    "name": "Dai Akatsuka",
+    "email": "d.akatsuka@gmail.com"
+  },
+  "description": "Fluent logger for Node.js",
+  "keywords": [
+    "logger",
+    "fluent",
+    "fluentd"
+  ],
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dakatsuka/fluent-logger-node.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/dakatsuka/fluent-logger-node/raw/master/LICENSE"
+    }
+  ],
+  "main": "./index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "engines": {
+    "node": ">= 0.6"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "1.1.0",
+    "should": "0.6.3"
+  }
+}
