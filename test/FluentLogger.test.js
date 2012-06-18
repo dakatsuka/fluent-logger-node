@@ -77,4 +77,65 @@ describe('FluentLogger', function() {
       }, 8000);
     });
   });
+
+  describe('buffer feature', function() {
+    beforeEach(function(done) {
+      server.close();
+      done();
+    });
+
+    it('should be push buffer if connection was broken', function(done) {
+      var logger = new fluent.FluentLogger(testPort, testHost, { bufferSize: 100 });
+
+      process.nextTick(function() {
+        for (var i = 0; i < 10; i++) {
+          logger.post('test.fluent', { foo: "bar" });
+        }
+
+        logger.head.should.eql(0);
+        logger.tail.should.eql(10);
+        logger.queues.length.should.eql(10);
+        done();
+      });
+    });
+
+    it('should be rotated buffer if number of post is greater than buffer size', function(done) {
+      var logger = new fluent.FluentLogger(testPort, testHost, { bufferSize: 10 });
+
+      process.nextTick(function() {
+        for (var i = 0; i < 15; i++) {
+          logger.post('test.fluent', { foo: "bar" });
+        }
+        logger.head.should.eql(6);
+        logger.tail.should.eql(5);
+        logger.queues.length.should.eql(10);
+        done();
+      });
+    });
+  });
+
+  describe('flush buffer', function() {
+    beforeEach(function(done) {
+      server.close();
+      done();
+    });
+
+    it('should be flushed buffer after reconnected', function(done) {
+      var logger = new fluent.FluentLogger(testPort, testHost);
+
+      logger.on('connect', function() {
+        logger.head.should.eql(0);
+        logger.tail.should.eql(0);
+        done();
+      });
+
+      process.nextTick(function() {
+        for (var i = 0; i < 10; i++) {
+          logger.post('test.fluent', { foo: "bar" });
+        }
+
+        server.listen(testPort, function () {});
+      });
+    });
+  });
 });
