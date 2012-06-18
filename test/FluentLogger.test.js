@@ -121,6 +121,7 @@ describe('FluentLogger', function() {
     });
 
     it('should be flushed buffer after reconnected', function(done) {
+      this.timeout(10000);
       var logger = new fluent.FluentLogger(testPort, testHost);
 
       logger.on('connect', function() {
