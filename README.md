@@ -32,7 +32,7 @@ var logger = fluent.createLogger({
   tagPrefix: "app"
 });
 
-logger.post("app.test", {hello: "world!"});
+logger.post("test", {hello: "world!"});
 // output: app.test {"hello":"world!"}
 ```
 
