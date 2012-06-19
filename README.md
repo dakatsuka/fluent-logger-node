@@ -9,13 +9,13 @@
 - Node.js v0.6 or higher
 - fluentd
 
-## Installation
+# Installation
 
 ```
 npm install fluent-logger-node
 ```
 
-## Usage
+# Usage
 
 ```
 var fluent = require('fluent-logger-node');
@@ -24,11 +24,11 @@ var logger = fluent.createLogger(24224, '127.0.0.1');
 logger.post("debug.test", {hello: "world!"});
 ```
 
-## License
+# License
 
 The MIT License
 
-## Contributors
+# Contributors
 
 - Dai Akatsuka
 - Minoru Takase
