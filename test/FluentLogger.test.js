@@ -59,69 +59,61 @@ describe('FluentLogger', function() {
     });
 
     it('should be retry if connection was broken', function(done) {
-      this.timeout(10000);
-
       var logger = new fluent.FluentLogger(testPort, testHost);
       var count = 1;
-
-      logger.on('retry', function() {
-        util.print(count++);
-      });
 
       logger.on('connect', function() {
         done();
       });
 
-      setTimeout(function() {
-        server.listen(testPort);
-      }, 8000);
+      server.listen(testPort);
     });
   });
 
   describe('buffer feature', function() {
     beforeEach(function(done) {
       server.close();
-      done();
+      process.nextTick(function() {
+        done();
+      });
     });
 
     it('should be push buffer if connection was broken', function(done) {
       var logger = new fluent.FluentLogger(testPort, testHost, { bufferSize: 100 });
 
-      process.nextTick(function() {
-        for (var i = 0; i < 10; i++) {
-          logger.post('test.fluent', { foo: "bar" });
-        }
+      for (var i = 0; i < 10; i++) {
+        logger.post('test.fluent', { foo: "bar" });
+      }
 
-        logger.head.should.eql(0);
-        logger.tail.should.eql(10);
-        logger.queues.length.should.eql(10);
-        done();
-      });
+      logger.head.should.eql(0);
+      logger.tail.should.eql(10);
+      logger.queues.length.should.eql(10);
+      done();
     });
 
     it('should be rotated buffer if number of post is greater than buffer size', function(done) {
       var logger = new fluent.FluentLogger(testPort, testHost, { bufferSize: 10 });
 
-      process.nextTick(function() {
-        for (var i = 0; i < 15; i++) {
-          logger.post('test.fluent', { foo: "bar" });
-        }
-        logger.head.should.eql(6);
-        logger.tail.should.eql(5);
-        logger.queues.length.should.eql(10);
-        done();
-      });
+      for (var i = 0; i < 15; i++) {
+        logger.post('test.fluent', { foo: "bar" });
+      }
+
+      logger.head.should.eql(6);
+      logger.tail.should.eql(5);
+      logger.queues.length.should.eql(10);
+      done();
     });
   });
 
   describe('flush buffer', function() {
     beforeEach(function(done) {
       server.close();
-      done();
+      process.nextTick(function() {
+        done();
+      });
     });
 
     it('should be flushed buffer after reconnected', function(done) {
-      this.timeout(10000);
       var logger = new fluent.FluentLogger(testPort, testHost);
 
       logger.on('connect', function() {
@@ -130,13 +122,11 @@ describe('FluentLogger', function() {
         done();
       });
 
-      process.nextTick(function() {
-        for (var i = 0; i < 10; i++) {
-          logger.post('test.fluent', { foo: "bar" });
-        }
+      for (var i = 0; i < 10; i++) {
+        logger.post('test.fluent', { foo: "bar" });
+      }
 
-        server.listen(testPort, function () {});
-      });
+      server.listen(testPort, function () {});
     });
   });
 });
