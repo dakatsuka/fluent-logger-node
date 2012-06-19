@@ -19,9 +19,21 @@ npm install fluent-logger-node
 
 ```
 var fluent = require('fluent-logger-node');
-var logger = fluent.createLogger(24224, '127.0.0.1');
+var logger = fluent.createLogger();
 
 logger.post("debug.test", {hello: "world!"});
+// output: debug.test {"hello":"world!"}
+
+
+
+var logger = fluent.createLogger({
+  host: "127.0.0.1",
+  port: 24224,
+  tagPrefix: "app"
+});
+
+logger.post("app.test", {hello: "world!"});
+// output: app.test {"hello":"world!"}
 ```
 
 # License

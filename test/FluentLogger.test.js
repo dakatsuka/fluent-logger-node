@@ -5,8 +5,7 @@ var util = require('util');
 var fluent = require(path.join(root, 'lib/FluentLogger'));
 var should = require('should');
 
-var testPort = 24242;
-var testHost = '127.0.0.1';
+var testPort = 24444;
 
 describe('FluentLogger', function() {
   var server;
@@ -28,7 +27,7 @@ describe('FluentLogger', function() {
       server.on('connection', function(socket) {
         done();
       });
-      new fluent.FluentLogger(testPort, testHost);
+      new fluent.FluentLogger({ port: testPort });
     });
   });
 
@@ -47,8 +46,24 @@ describe('FluentLogger', function() {
         });
       });
 
-      logger = new fluent.FluentLogger(testPort, testHost);
+      logger = new fluent.FluentLogger({ port: testPort });
       logger.post('test.fluent', { foo: "bar" });
+    });
+
+    it('should set tag prefix', function(done) {
+      server.on('connection', function(socket) {
+        socket.setEncoding('utf8');
+        socket.on('data', function(data) {
+          var json = JSON.parse(data);
+          json[0].should.eql('prefix.fluent');
+          json[1].should.be.a('number');
+          json[2].should.eql({ foo: "bar" });
+          done();
+        });
+      });
+
+      logger = new fluent.FluentLogger({ port: testPort, tagPrefix: "prefix" });
+      logger.post('fluent', { foo: "bar" });
     });
   });
 
@@ -59,14 +74,14 @@ describe('FluentLogger', function() {
     });
 
     it('should be retry if connection was broken', function(done) {
-      var logger = new fluent.FluentLogger(testPort, testHost);
+      var logger = new fluent.FluentLogger({ port: testPort });
       var count = 1;
 
       logger.on('connect', function() {
         done();
       });
 
-      server.listen(testPort);
+      server.listen(logger.port);
     });
   });
 
@@ -79,7 +94,7 @@ describe('FluentLogger', function() {
     });
 
     it('should be push buffer if connection was broken', function(done) {
-      var logger = new fluent.FluentLogger(testPort, testHost, { bufferSize: 100 });
+      var logger = new fluent.FluentLogger({ port: testPort, bufferSize: 100 });
 
       for (var i = 0; i < 10; i++) {
         logger.post('test.fluent', { foo: "bar" });
@@ -92,7 +107,7 @@ describe('FluentLogger', function() {
     });
 
     it('should be rotated buffer if number of post is greater than buffer size', function(done) {
-      var logger = new fluent.FluentLogger(testPort, testHost, { bufferSize: 10 });
+      var logger = new fluent.FluentLogger({ port: testPort, bufferSize: 10 });
 
       for (var i = 0; i < 15; i++) {
         logger.post('test.fluent', { foo: "bar" });
@@ -114,7 +129,7 @@ describe('FluentLogger', function() {
     });
 
     it('should be flushed buffer after reconnected', function(done) {
-      var logger = new fluent.FluentLogger(testPort, testHost);
+      var logger = new fluent.FluentLogger({port: testPort });
 
       logger.on('connect', function() {
         logger.head.should.eql(0);
@@ -126,7 +141,7 @@ describe('FluentLogger', function() {
         logger.post('test.fluent', { foo: "bar" });
       }
 
-      server.listen(testPort, function () {});
+      server.listen(logger.port, function () {});
     });
   });
 });
