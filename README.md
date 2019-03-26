@@ -1,5 +1,8 @@
 # Fluent Logger Node.js
 
+This library has been unmaintained since 7 years ago.
+Please use https://github.com/fluent/fluent-logger-node instead of this library.
+
 **fluent-logger-node** is a structured event logger for Fluent.
 
 [![Build Status](https://secure.travis-ci.org/dakatsuka/fluent-logger-node.png)](http://travis-ci.org/dakatsuka/fluent-logger-node)
